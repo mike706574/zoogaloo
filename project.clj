@@ -1,5 +1,5 @@
 (defproject zoogaloo "1.0.0-SNAPSHOT"
-  :description "Something"
+  :description "A webapp"
   :url "http://mike-zoogaloo.herokuapp.com"
   :license {:name "Eclipse Public License - v 1.0"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

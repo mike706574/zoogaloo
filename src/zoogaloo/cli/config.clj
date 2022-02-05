@@ -9,7 +9,7 @@
 
   ([{:keys [env password]}]
    {:client (case env
-              "dev" {:url "http://localhost:7600"
+              "dev" {:url "http://localhost:8080"
                      :email "admin"
                      :password password}
               "prod" {:url "https://zoogaloo-mike.herokuapp.com"
