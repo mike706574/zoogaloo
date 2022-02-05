@@ -21,7 +21,7 @@
 
 (repl/set-refresh-dirs "src")
 
-(def port 7600)
+(def port 8080)
 
 ;; backend
 (def admin-password "admin!")
@@ -62,6 +62,9 @@
 (defn restart []
   (stop)
   (go))
+
+(defn migrate []
+  (db/migrate db))
 
 (def db (db/new-db (:db config)))
 

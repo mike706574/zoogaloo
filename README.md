@@ -12,6 +12,12 @@ Start the development database:
 docker compose up
 ```
 
+Install frontend dependencies:
+
+```
+npm install
+```
+
 Start the frontend:
 
 ```

@@ -217,8 +217,12 @@
           "Submit"]]))))
 
 (defn home-page []
-  [:<>
-   [:p "This is a home page."]])
+  (let [account @(rf/subscribe [:account])]
+    [:<>
+     [:p "This is a home page."]
+     [:p (if account
+           (str "You're logged in as " (:email account) ".")
+           "You're not logged in.")]]))
 
 (defn app []
   (let [{:keys [loading error account]} @(rf/subscribe [:state])
