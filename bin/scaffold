@@ -1,0 +1,3 @@
+#!/bin/sh
+find . -type f | xargs sed -i '' 's/zoogaloo/$1/g'
+mv src/zoogaloo src/$1

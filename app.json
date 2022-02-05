@@ -1,0 +1,6 @@
+{
+  "name": "zoogaloo",
+  "description": "A webapp",
+  "image": "heroku/clojure",
+  "addons": [ "heroku-postgresql" ]
+}

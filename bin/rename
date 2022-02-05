@@ -1,0 +1,22 @@
+#!/bin/sh -xe
+
+if [ "$#" -ne 2 ]; then
+  echo "Usage: bin/rename $SOURCE $DEST" >&2
+  exit 1
+fi
+
+SOURCE=$1
+DEST=$2
+
+LOWER_SOURCE=$(echo $SOURCE | tr A-Z a-z)
+UPPER_SOURCE=$(echo $SOURCE | tr a-z A-Z)
+
+LOWER_DEST=$(echo $DEST | tr A-Z a-z)
+UPPER_DEST=$(echo $DEST | tr a-z A-Z)
+
+LC_ALL=C find . -not -name ./bin/rename -type f -exec sed -i '' s/$LOWER_SOURCE/$LOWER_DEST/g {} +
+LC_ALL=C find . -not -name ./bin/rename -type f -exec sed -i '' s/$UPPER_SOURCE/$UPPER_DEST/g {} +
+
+mv src/$LOWER_SOURCE src/$LOWER_DEST
+
+git init
