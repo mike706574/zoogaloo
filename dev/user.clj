@@ -63,10 +63,10 @@
   (stop)
   (go))
 
+(def db (db/new-db (:db config)))
+
 (defn migrate []
   (db/migrate db))
-
-(def db (db/new-db (:db config)))
 
 (def cli-config (cli-config/config {:env "dev" :password admin-password}))
 (def cli-deps (cli-config/deps cli-config))

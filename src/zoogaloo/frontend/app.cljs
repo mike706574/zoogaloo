@@ -216,13 +216,30 @@
            :on-click #(rf/dispatch [:login params])}
           "Submit"]]))))
 
+(def rows
+  [{:name "Bob" :weight 145.23 :amount 200000}
+   {:name "Alice" :weight 263.93 :amount 150000}])
+
+(def cols
+  [{:key "name"
+    :label "Name"
+    :resolve :name}
+   {:key "weight"
+    :label "Weight"
+    :resolve :weight}
+   {:key "amount"
+    :label "Amount"
+    :resolve :amount
+    :format {:type :currency}}])
+
 (defn home-page []
   (let [account @(rf/subscribe [:account])]
     [:<>
      [:p "This is a home page."]
      [:p (if account
            (str "You're logged in as " (:email account) ".")
-           "You're not logged in.")]]))
+           "You're not logged in.")]
+     [table/responsive-table {:row-key :name :cols cols :rows rows}]]))
 
 (defn app []
   (let [{:keys [loading error account]} @(rf/subscribe [:state])

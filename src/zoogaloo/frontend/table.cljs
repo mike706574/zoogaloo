@@ -5,18 +5,45 @@
     (get-in row path)
     (get row path)))
 
-(defn get-value [idx row col]
-  (let [{:keys [render path format]} col]
+(def number-format (js/Intl.NumberFormat. "en-us"))
+(defn format-number [{:keys [val]}]
+  (.format number-format val))
+
+(def currency-format (js/Intl.NumberFormat. "en-us" (js-obj "style" "currency" "currency" "USD")))
+(defn format-currency [{:keys [val]}]
+  (.format currency-format val))
+
+(defmulti get-formatter :type)
+
+(defmethod get-formatter :numeric [format]
+  format-number)
+
+(defmethod get-formatter :currency [format]
+  format-currency)
+
+(defmethod get-formatter :default [format]
+  (throw (ex-info "invalid format type" format)))
+
+(defn get-val [idx row col]
+  (let [{:keys [resolve render format]} col]
     (cond
       render (render {:idx idx :row row})
-      path (let [raw-value (get-path row path)
-                 value (if format
-                         (format raw-value)
-                         raw-value)]
-             value)
-      :else (throw (ex-info "Invalid column" col)))))
+      resolve (let [raw-val (cond
+                                (seq? resolve) (get-in row resolve)
+                                (keyword? resolve) (get row resolve)
+                                (fn? resolve) (resolve {:idx idx :row row})
+                                :else (throw (ex-info "invalid resolve" col)))
+                    val (cond
+                            (nil? format) raw-val
+                            (fn? format) (format raw-val)
+                            (map? format) ((get-formatter format) {:val raw-val})
+                            :else (throw (ex-info "invalid format" col)))]
+                val)
+      :else (throw (ex-info "invalid column" {:col col})))))
 
-(defn responsive-table [{:keys [cols rows row-key style]}]
+(defn responsive-table [{:keys [cols rows row-key style] :as args}]
+  (when-not row-key
+    (throw (ex-info "row-key is required" args)))
   [:div.table-responsive
    {:style (merge {"padding" "1rem"
                    "border" "1px solid #dee2e6"}
@@ -36,4 +63,4 @@
         (for [{key :key :as col} cols]
           [:td
            {:key key}
-           (get-value idx row col)])])]]])
+           (get-val idx row col)])])]]])

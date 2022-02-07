@@ -25,6 +25,16 @@
     (get-in row path)
     (get row path)))
 
+(defmulti get-formatter :type)
+
+(defmethod get-formatter "numeric" [{:keys []}]
+
+  )
+
+(defmethod get-formatter :default [format]
+  (throw (ex-info "invalid format type" format)))
+
+
 (defn get-value [idx row col]
   (let [{:keys [resolve render format]} col]
     (cond
@@ -33,16 +43,18 @@
                                 (seq? resolve) (get-in row resolve)
                                 (keyword? resolve) (get row resolve)
                                 (fn? resolve) (resolve {:idx idx :row row})
-                                :else (throw (ex-info "Invalid resolve" {:resolve resolve})))
-                    value (if format
-                            (format raw-value)
-                            raw-value)]
-)
-      :else (throw (ex-info "Invalid column" {:col col})))))
+                                :else (throw (ex-info "invalid resolve" col)))
+                    value (cond
+                            (nil? format) raw-value
+                            (fn? format) (format raw-value)
+                            (map? )
+                            :else (throw (ex-info "invalid format" col)))]
+                value)
+      :else (throw (ex-info "invalid column" {:col col})))))
 
 (defn responsive-table [{:keys [cols rows row-key style] :as args}]
   (when-not row-key
-    (throw e))
+    (throw (ex-info "row-key is required" args)))
   [:div.table-responsive
    {:style (merge {"padding" "1rem"
                    "border" "1px solid #dee2e6"}
@@ -68,14 +80,19 @@
   {:key "name"
    :resolve :name})
 
+
 (responsive-table
  {:cols [name-col]
   :rows [{:name "Bob"}
-         {:name "Alice"}]})
+         {:name "Alice"}]
+  :row-key :name})
 
 
 
 (comment
+  ;; format
+
+  ;; column
   {:key "name" ;; string
    :label ;; string
    :renderLabel ;; function taking {:idx idx :col col :deps deps} returning anything
